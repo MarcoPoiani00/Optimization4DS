@@ -55,7 +55,7 @@ Below is a **proposed explanation** of the experimental setup for your study, in
 
 3. **Loss Calculation**  
    - Main term: Mean Squared Error (MSE) $\|\hat{\mathbf{y}} - \mathbf{y}\|^2$.  
-   - Regularization term: $ \lambda \|\mathbf{W}_2\|_1$.  
+   - Regularization term: $\lambda \|\mathbf{W}_2\|_1$.  
    - Overall objective: $f(\mathbf{W}_2) = \|\hat{\mathbf{y}} - \mathbf{y}\|^2 + \lambda \|\mathbf{W}_2\|_1$.
 
 4. **Gradient Computation**  
@@ -64,8 +64,7 @@ Below is a **proposed explanation** of the experimental setup for your study, in
 
 5. **Optimizer Update**  
    - **Momentum Descent**: 
-     $$v_{\text{new}} = \beta \, v_{\text{old}} - \alpha \, \nabla f(\mathbf{W}_2^{(t)}), \quad
-     \mathbf{W}_2^{(t+1)} = \mathbf{W}_2^{(t)} + v_{\text{new}}.$$
+     $$v_{\text{new}} = \beta \, v_{\text{old}} - \alpha \, \nabla f(\mathbf{W}_2^{(t)}), \quad\mathbf{W}_2^{(t+1)} = \mathbf{W}_2^{(t)} + v_{\text{new}}.$$
    - **Smoothed Gradient**: 
      $$\nabla f_\mu(\mathbf{W}_2) \approx \nabla \bigl[\|\hat{\mathbf{y}} - \mathbf{y}\|^2 + \lambda \, h_\mu(\mathbf{W}_2)\bigr],$$
      where $h_\mu(\cdot)$ is the smooth approximation to $\|\cdot\|_1$.  
