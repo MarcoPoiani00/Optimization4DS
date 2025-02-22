@@ -10,9 +10,7 @@ Below is a **proposed explanation** of the experimental setup for your study, in
      - Sample each feature from a normal distribution or uniform distribution, ensuring sufficient diversity in the input space.  
      - Optionally, normalize each feature to improve gradient-based optimization stability.
    - **Targets $\mathbf{y}$**: Generate ground-truth outputs $\mathbf{y}$ as linear or slightly nonlinear combinations of the input features with added Gaussian noise:
-     $$
-     \mathbf{y} = \mathbf{W}_2^* \, \phi(\mathbf{W}_1 \mathbf{X} + \mathbf{b}_1) + \epsilon,\quad \epsilon \sim \mathcal{N}(0, \sigma^2).
-     $$
+     $$\mathbf{y} = \mathbf{W}_2^* \, \phi(\mathbf{W}_1 \mathbf{X} + \mathbf{b}_1) + \epsilon,\quad \epsilon \sim \mathcal{N}(0, \sigma^2).$$
      Here, $\mathbf{W}_2^*$ is a randomly chosen “true” hidden-to-output matrix that you do *not* optimize directly (it just helps define realistic targets).
    - **Validation Split**: Reserve a small portion of $\mathbf{X}$ and $\mathbf{y}$ (e.g., 10–20%) for validation to monitor overfitting or to tune hyperparameters.
 
@@ -66,19 +64,13 @@ Below is a **proposed explanation** of the experimental setup for your study, in
 
 5. **Optimizer Update**  
    - **Momentum Descent**: 
-     $$
-     v_{\text{new}} = \beta \, v_{\text{old}} - \alpha \, \nabla f(\mathbf{W}_2^{(t)}), \quad
-     \mathbf{W}_2^{(t+1)} = \mathbf{W}_2^{(t)} + v_{\text{new}}.
-     $$
+     $$v_{\text{new}} = \beta \, v_{\text{old}} - \alpha \, \nabla f(\mathbf{W}_2^{(t)}), \quad
+     \mathbf{W}_2^{(t+1)} = \mathbf{W}_2^{(t)} + v_{\text{new}}.$$
    - **Smoothed Gradient**: 
-     $$
-     \nabla f_\mu(\mathbf{W}_2) \approx \nabla \bigl[\|\hat{\mathbf{y}} - \mathbf{y}\|^2 + \lambda \, h_\mu(\mathbf{W}_2)\bigr],
-     $$
+     $$\nabla f_\mu(\mathbf{W}_2) \approx \nabla \bigl[\|\hat{\mathbf{y}} - \mathbf{y}\|^2 + \lambda \, h_\mu(\mathbf{W}_2)\bigr],$$
      where $h_\mu(\cdot)$ is the smooth approximation to $\|\cdot\|_1$.  
      Then update:
-     $$
-     \mathbf{W}_2^{(t+1)} = \mathbf{W}_2^{(t)} - \alpha \, \nabla f_\mu\bigl(\mathbf{W}_2^{(t)}\bigr).
-     $$
+     $$\mathbf{W}_2^{(t+1)} = \mathbf{W}_2^{(t)} - \alpha \, \nabla f_\mu\bigl(\mathbf{W}_2^{(t)}\bigr).$$
 
 6. **Iteration and Convergence Check**  
    - Repeat until reaching a maximum iteration cap or until the stopping criterion is satisfied (e.g., gradient norm or improvement in objective below a threshold).  
