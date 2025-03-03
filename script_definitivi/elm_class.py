@@ -1,4 +1,7 @@
 import numpy as np
+import matplotlib.pyplot as plt
+import time
+import itertools
 
 class ELM:
     """
@@ -8,7 +11,7 @@ class ELM:
       2) Compute hidden layer output matrix H.
       3) Compute output weights beta = H^dagger * T (Moore-Penrose pseudoinverse).
     """
-    def __init__(self, input_size, hidden_size, output_size, activation='relu', seed=None):
+    def __init__(self, input_size, hidden_size, output_size, l1_lambda=0.0, activation='relu', seed=None):
         """
         Parameters
         ----------
@@ -27,6 +30,7 @@ class ELM:
         self.input_size = input_size
         self.hidden_size = hidden_size
         self.output_size = output_size
+        self.l1_lambda = l1_lambda  # Add this line
         
         if seed:
             np.random.seed(seed)
