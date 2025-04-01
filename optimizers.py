@@ -9,8 +9,6 @@ def NAG(f, theta, epsilon, eta, tol, max_iters, grad_norm_threshold=None):
         eta (float): Momentum coefficient.
         tol (float): Convergence tolerance.
         max_iters (int): Maximum number of iterations.
-        patience (int): Number of iterations without improvement before stopping.
-        loss_threshold (float): Upper bound to stop if loss explodes.
         grad_norm_threshold (float, optional): Stopping criterion based on gradient norm.
 
     returns:
