@@ -14,14 +14,12 @@ elm_smoothed = ELM(input_size=X_syn.shape[1], hidden_size=200, output_size=1,
                    l1_lambda=0.001, activation='relu', seed=1710)
 
 epochs = 1000
-patience, early_stop_patience = 150, 150
 
 best_nag_params = {
     "epsilon": 0.01, 
     "eta": 0.99,
     "tol": 0.0001,
-    "max_iters": epochs,
-    "patience": patience
+    "max_iters": epochs
 }
 
 print("---[NAG]---")
@@ -43,8 +41,7 @@ best_smoothed_params = {
     "D2":D2,
     "M": M,
     "epochs": epochs,
-    "nu":None,
-    "early_stop_patience": early_stop_patience
+    "nu":None
 }
 print("---[smoothed]---")
 start_time = time.time()
@@ -84,7 +81,6 @@ plt.savefig("nag_vs_smoothed_theoreticalMu.png", dpi=300)
 # ------------------------------------------------------------------
 
 epochs = 20000
-patience, early_stop_patience = 200, 200
 
 elm_nag = ELM(input_size=X_syn.shape[1], hidden_size=200, output_size=1,
               l1_lambda=0.001, activation='relu', seed=1710)
@@ -96,8 +92,7 @@ best_nag_params = {
     "epsilon": 0.01, 
     "eta": 0.99,
     "tol": 0.0001,
-    "max_iters": epochs,
-    "patience": patience
+    "max_iters": epochs
 }
 
 print("---[NAG_2]---")
@@ -119,8 +114,7 @@ best_smoothed_params = {
     "D2":D2,
     "M": M,
     "epochs": epochs,
-    "nu":None,
-    "early_stop_patience": early_stop_patience
+    "nu":None
 }
 
 print("---[smoothed_2]---")
@@ -161,7 +155,6 @@ plt.savefig("nag_vs_smoothed_fixedMu.png", dpi=300)
 # --------------------------------------------------------
 # CALIFORNIA
 epochs = 1000
-patience, early_stop_patience = 200, 200
 
 from sklearn.datasets import fetch_california_housing
 from sklearn.preprocessing import StandardScaler
@@ -193,8 +186,7 @@ best_nag_params = {
     "epsilon": 0.01,  
     "eta": 0.99,     
     "tol": 0.0001,
-    "max_iters": epochs,
-    "patience": patience
+    "max_iters": epochs
 }
 
 print("---[NAG_cal]---")
@@ -217,8 +209,7 @@ best_smoothed_params = {
     "D2":D2,
     "M": M,
     "epochs": epochs,
-    "nu":None,
-    "early_stop_patience": early_stop_patience
+    "nu":None
 }
 
 print("---[smoothed_cal]---")
@@ -262,7 +253,6 @@ from tensorflow.keras.optimizers import Adam
 import tensorflow as tf
 
 epochs = 20000
-patience, early_stop_patience = 200, 200
 
 elm_nag = ELM(input_size=X_syn.shape[1], hidden_size=200, output_size=1,
               l1_lambda=0.001, activation='relu', seed=1710)
@@ -274,8 +264,7 @@ best_nag_params = {
     "epsilon": 0.01,  
     "eta": 0.99,  
     "tol": 0.0001,
-    "max_iters": epochs,
-    "patience": patience
+    "max_iters": epochs
 }
 
 print("---[NAG_final]---")
@@ -299,7 +288,6 @@ best_smoothed_params = {
     "D2":D2,
     "M": M,
     "epochs": epochs,
-    "early_stop_patience": early_stop_patience,
     "nu":None}
 
 print("---[smoothed_final]---")
@@ -316,7 +304,6 @@ def train_with_adam(model, X, y,
                         batch_size=None,
                         verbose=True,
                         activation='relu',
-                        patience=10,
                         tol=1e-6):
 
         X_tf = tf.convert_to_tensor(X, dtype=tf.float32)
@@ -352,7 +339,7 @@ def train_with_adam(model, X, y,
         loss_history = []
         num_batches = (N + batch_size - 1) // batch_size
         best_loss = float("inf")
-        patience_counter = 0
+
 
         for epoch in range(epochs):
             idx = tf.random.shuffle(tf.range(N))
@@ -382,13 +369,6 @@ def train_with_adam(model, X, y,
             # Early stopping check
             if epoch_loss < best_loss - tol:
                 best_loss = epoch_loss
-                patience_counter = 0
-            else:
-                patience_counter += 1
-
-            if patience_counter >= patience:
-                print(f"Early stopping at epoch {epoch+1}, best loss: {best_loss:.6f}")
-                break
 
         model.weights_hidden_output = W_out_var.numpy()
         model.bias_output = b_out_var.numpy()

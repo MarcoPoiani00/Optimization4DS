@@ -1,6 +1,6 @@
 import numpy as np
 
-def NAG(f, theta, epsilon, eta, tol, max_iters, patience=500, loss_threshold=1e10, grad_norm_threshold=None):
+def NAG(f, theta, epsilon, eta, tol, max_iters, grad_norm_threshold=None):
     """
     params:
         f (function): Function that returns (value, gradient, Hessian).
@@ -20,37 +20,19 @@ def NAG(f, theta, epsilon, eta, tol, max_iters, patience=500, loss_threshold=1e1
     v = np.zeros_like(theta)
     history = {"losses": [], "grad_norms": [], "trajectory": []}
 
-    best_loss = float("inf")
-    patience_counter = 0
-
     for t in range(1, max_iters + 1):
         theta_lookahead = theta + eta * v
         loss, grad, _ = f(theta_lookahead)
-
-        if np.abs(loss) > loss_threshold or np.isnan(loss):
-            print(f"Stopping early: Unstable loss at iteration {t}, loss: {loss}")
-            break
-
-        if grad is None:
-            print(f"Gradient is None at iteration {t}, stopping optimization.")
+        if grad is None or np.isnan(loss):
+            print(f"Arresto: gradiente None o loss NaN a iterazione {t}.")
             break
 
         grad_norm = np.linalg.norm(grad)
         history["losses"].append(loss)
         history["grad_norms"].append(grad_norm)
 
-        if loss < best_loss - tol:
-            best_loss = loss
-            patience_counter = 0
-        else:
-            patience_counter += 1
-
-        if patience_counter >= patience:
-            print(f"Early stopping at iteration {t}, best loss: {best_loss:.6f}")
-            break
-
         if grad_norm < tol or (grad_norm_threshold and grad_norm < grad_norm_threshold):
-            print(f"Convergence reached: Gradient norm {grad_norm:.6f}")
+            print(f"Convergenza a iterazione {t}, norma gradiente = {grad_norm:.6f}")
             break
 
         v = eta * v - epsilon * grad
@@ -98,8 +80,7 @@ def smoothed(
     nu=None,
     momentum_init=0.9,
     gradient_norm_threshold=None,
-    verbose=True,
-    early_stop_patience=300
+    verbose=True
 ):
     assert A_norm > 0, "A_norm must be positive."
     assert D1 > 0 and D2 > 0, "D1 and D2 must be positive."
@@ -107,17 +88,15 @@ def smoothed(
 
     if mu is None:
         mu = (2 * A_norm / (epochs + 1)) * np.sqrt(D1 / (sigma_1 * sigma_2 * D2))
-
-    assert mu > 0, "Computed μ must be positive."
+    assert mu > 0, "Computed mu must be positive."
 
     L_L1 = (1.0 / (mu * sigma_2)) * A_norm
-
     if M is None:
         M = L_L1
 
     L_mu = M + L_L1
     if nu is None:
-        nu = 1.0 / L_mu 
+        nu = 1.0 / L_mu
 
     if verbose:
         print("------ PARAMETERS ------")
@@ -135,33 +114,23 @@ def smoothed(
     eta = momentum_init
 
     history = {"losses": [], "grad_norms": [], "trajectory": [theta.copy()]}
-    
-    early_stop_tol = 1e-6 
-    best_loss = float("inf")
-    no_improve_counter = 0
 
     for epoch in range(epochs):
         theta_look = theta + eta * v
         loss, grad, _ = f(theta_look)
-        gn = np.linalg.norm(grad)
 
+        if grad is None or np.isnan(loss):
+            print(f"Arresto: gradiente None o loss NaN a epoca {epoch}.")
+            break
+
+        gn = np.linalg.norm(grad)
         history["losses"].append(loss)
         history["grad_norms"].append(gn)
 
-        if loss < best_loss - early_stop_tol:
-            best_loss = loss
-            no_improve_counter = 0 
-        else:
-            no_improve_counter += 1
-
-        if no_improve_counter >= early_stop_patience:
-            print(f"Early stopping at epoch {epoch}, no significant improvement for {early_stop_patience} iterations.")
-            break
-
         if gradient_norm_threshold is not None and gn < gradient_norm_threshold:
-            print(f"Stopping early at epoch {epoch}, grad norm < {gradient_norm_threshold}")
+            print(f"Convergenza a epoca {epoch}, norma gradiente < {gradient_norm_threshold}")
             break
-
+        
         v = eta * v - nu * grad
         theta = theta + v
         history["trajectory"].append(theta.copy())
